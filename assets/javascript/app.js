@@ -21,8 +21,13 @@ $(window).on("load", function() {
     if (numPlayers === undefined) {
       console.log("First Initiliazing number of players");
       numPlayers = snapshot.val().numPlayers + 1;
+
+      //Assuming two players only for now
+      currentPlayer = numPlayers === 1 ? "Player 1" : "Player 2";
       console.log("Player " + numPlayers + " has joined");
-      database.ref().set({
+
+      //Update the total number of players
+      database.ref().update({
         numPlayers: numPlayers
       });
     } else {
@@ -42,27 +47,13 @@ $(window).on("load", function() {
       $("#lobby-status").text("Please wait, two players are already playing");
     }
   });
-  //     console.log("Entering database event");)
-  //   database.ref().on("value", function(snapshot) {
-  //     console.log("Entering database event");
-  //     numPlayers = snapshot.val().numPlayers + 1;
-
-  //     console.log("New Player has joined: " + numPlayers);
-
-  //     if (numPlayers == 2) {
-  //       $("#lobby-status").text("Other player has connected!!!");
-  //     } else if (numPlayers < 2) {
-  //       $("#lobby-status").text("Please wait for player 2");
-  //     } else {
-  //       alert("Please wait, two players are already playing");
-  //     }
-  //     currentPlayer = numPlayers;
-  //     console.log("Current Player: " + currentPlayer);
-  //   });
 
   //RPS chosen
   $(".choice-image").on("click", function() {
     console.log("Choice: " + $(this).attr("id"));
+    database.ref(currentPlayer).update({
+      playersChoice: $(this).attr("id")
+    });
   });
 
   //
@@ -70,7 +61,7 @@ $(window).on("load", function() {
 
 // Before the user leaves reduce the number of players connected in the database
 window.addEventListener("beforeunload", function(event) {
-  database.ref().set({
+  database.ref().update({
     numPlayers: numPlayers - 1
   });
 });
