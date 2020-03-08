@@ -19,6 +19,26 @@ var config = {
 firebase.initializeApp(config);
 var database = firebase.database();
 
+function updateLobbyStatus() {
+  // Scenario when player 3 joins, gamestarted is first false
+  // so player 3 would no be able to start the game and this
+  // would not affect player 1 and 2
+  if (numPlayers > 2 && !gameStarted) {
+    $("#lobby-status").text("Please wait, two players are already playing");
+  }
+  // Scenario when it's just two players connected
+  else if (queueArray.join() === "Connected,Connected" && !gameStarted) {
+    $("#lobby-status").text("Other player has connected!!!");
+    gameStarted = true;
+  }
+  // Scenario when one of the two players leaves a current game and now we need
+  // reset the current game status
+  else if (queueArray.join() !== "Connected,Connected") {
+    gameStarted = false;
+    $("#lobby-status").text("Please wait for player 2");
+  }
+}
+
 $(window).on("load", function() {
   database.ref().on(
     "value",
@@ -51,24 +71,7 @@ $(window).on("load", function() {
         numPlayers = snapshot.val().numPlayers;
         queueArray = snapshot.val().queue.split(",");
       }
-
-      // Scenario when player 3 joins, gamestarted is first false
-      // so player 3 would no be able to start the game and this
-      // would not affect player 1 and 2
-      if (numPlayers > 2 && !gameStarted) {
-        $("#lobby-status").text("Please wait, two players are already playing");
-      }
-      // Scenario when it's just two players connected
-      else if (queueArray.join() === "Connected,Connected" && !gameStarted) {
-        $("#lobby-status").text("Other player has connected!!!");
-        gameStarted = true;
-      }
-      // Scenario when one of the two players leaves a current game and now we need
-      // reset the current game status
-      else if (queueArray.join() !== "Connected,Connected") {
-        gameStarted = false;
-        $("#lobby-status").text("Please wait for player 2");
-      }
+      updateLobbyStatus();
     },
     function(errorObject) {
       console.log("The read failed: " + errorObject.code);
