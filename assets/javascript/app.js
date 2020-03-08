@@ -6,6 +6,8 @@ var queueArray;
 var queueNum;
 
 var gameStarted = false;
+var roundTimer = 10;
+var timerID;
 
 var config = {
   apiKey: "AIzaSyCX2ImGsjGfs3lM1z534rqg064WLNKsiIY",
@@ -19,6 +21,16 @@ var config = {
 firebase.initializeApp(config);
 var database = firebase.database();
 
+function decreaseTime() {
+  roundTimer--;
+  if (roundTimer === 0) {
+    alert("Time's Up");
+    roundTimer = 10;
+  } else {
+    console.log(roundTimer);
+  }
+}
+
 function updateLobbyStatus() {
   // Scenario when player 3 joins, gamestarted is first false
   // so player 3 would no be able to start the game and this
@@ -30,10 +42,16 @@ function updateLobbyStatus() {
   else if (queueArray.join() === "Connected,Connected" && !gameStarted) {
     $("#lobby-status").text("Other player has connected!!!");
     gameStarted = true;
+    console.log("Game Starting");
+    timerID = setInterval(function() {
+      decreaseTime();
+    }, 1000);
   }
   // Scenario when one of the two players leaves a current game and now we need
   // reset the current game status
   else if (queueArray.join() !== "Connected,Connected") {
+    console.log("Game Restarting");
+
     gameStarted = false;
     $("#lobby-status").text("Please wait for player 2");
   }
@@ -43,11 +61,9 @@ $(window).on("load", function() {
   database.ref().on(
     "value",
     function(snapshot) {
-      console.log("Event Database");
       // This will occur when first loading the window
       if (numPlayers === undefined) {
         console.log("First Initiliazing number of players");
-        console.log(snapshot.val());
         //Sync current number of players
         numPlayers = snapshot.val().numPlayers + 1;
 
@@ -59,7 +75,7 @@ $(window).on("load", function() {
         //Register Player number
         currentPlayer = "Player " + (queueNum + 1);
         opposingPlayer = queueNum === 0 ? "Player 2" : "Player 1";
-        console.log("Player " + numPlayers + " has joined");
+        console.log(currentPlayer + " has joined");
         console.log("Players in queue: " + queueArray.join());
 
         //Update the total number of players
@@ -82,8 +98,12 @@ $(window).on("load", function() {
   database.ref(opposingPlayer).on(
     "value",
     function(snapshot) {
-      console.log("Opponent: " + opposingPlayer);
-      console.log(snapshot.child(opposingPlayer).val());
+      console.log(
+        "Opponent: " +
+          opposingPlayer +
+          " choose " +
+          snapshot.child(opposingPlayer).val().playersChoice
+      );
     },
     function(errorObject) {
       console.log("The read failed: " + errorObject.code);
