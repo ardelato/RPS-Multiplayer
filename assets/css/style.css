@@ -1,0 +1,16 @@
+body {
+  background-image: url("../images/dojobackground.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.choice-image {
+  width: 200px;
+  height: 200px;
+}
+
+#scissors {
+  transform: rotate(-90deg);
+}
