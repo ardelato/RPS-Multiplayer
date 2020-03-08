@@ -9,8 +9,51 @@ body {
 .choice-image {
   width: 200px;
   height: 200px;
+  cursor: pointer;
 }
 
 #scissors {
   transform: rotate(-90deg);
+}
+
+#rock:hover {
+  animation: hand-hover-animate 1s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes hand-hover-animate {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.5) rotate(90deg);
+  }
+}
+
+#scissors:hover {
+  animation: scissor-hover-animate 1s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes scissor-hover-animate {
+  from {
+    transform: scale(1) rotate(-90deg);
+  }
+  to {
+    transform: scale(1.5);
+  }
+}
+
+#paper:hover {
+  animation: paper-hover-animate 1s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes paper-hover-animate {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.5) rotate(90deg);
+  }
 }
