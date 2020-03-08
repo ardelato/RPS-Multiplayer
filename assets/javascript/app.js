@@ -29,6 +29,8 @@ function decreaseTime() {
   } else {
     console.log(roundTimer);
   }
+  $("#lobby-status").text("Get Ready");
+  $("#round-timer").text("Time Left: " + roundTimer);
 }
 
 function updateLobbyStatus() {
@@ -43,6 +45,7 @@ function updateLobbyStatus() {
     $("#lobby-status").text("Other player has connected!!!");
     gameStarted = true;
     console.log("Game Starting");
+
     timerID = setInterval(function() {
       decreaseTime();
     }, 1000);
@@ -51,8 +54,10 @@ function updateLobbyStatus() {
   // reset the current game status
   else if (queueArray.join() !== "Connected,Connected") {
     console.log("Game Restarting");
-
     gameStarted = false;
+    clearInterval(timerID);
+    roundTimer = 10;
+    $("#round-timer").text("");
     $("#lobby-status").text("Please wait for player 2");
   }
 }
