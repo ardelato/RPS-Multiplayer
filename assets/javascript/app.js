@@ -1,6 +1,10 @@
 var currentPlayer;
 var opposingPlayer;
+
 var numPlayers;
+var queueArray;
+var queueNum;
+
 var gameStarted = false;
 
 var config = {
@@ -24,21 +28,28 @@ $(window).on("load", function() {
       if (numPlayers === undefined) {
         console.log("First Initiliazing number of players");
         console.log(snapshot.val());
+        //Sync current number of players
         numPlayers = snapshot.val().numPlayers + 1;
-        var queueArray = snapshot.val().queue.split(",");
-        queueArray[0] = "Connected";
-        console.log("Queue index: " + queueArray.indexOf("empty"));
-        //Assuming two players only for now
-        currentPlayer = numPlayers === 1 ? "Player 1" : "Player 2";
-        opposingPlayer = numPlayers === 1 ? "Player 2" : "Player 1";
+
+        //Update lobby queue
+        queueArray = snapshot.val().queue.split(",");
+        queueNum = queueArray.indexOf("empty");
+        queueArray[queueNum] = "Connected";
+
+        //Register Player number
+        currentPlayer = "Player " + (queueNum + 1);
+        opposingPlayer = queueNum === 0 ? "Player 2" : "Player 1";
         console.log("Player " + numPlayers + " has joined");
+        console.log("Players in queue: " + queueArray.join());
 
         //Update the total number of players
         database.ref().update({
+          queue: queueArray.join(),
           numPlayers: numPlayers
         });
       } else {
         numPlayers = snapshot.val().numPlayers;
+        queueArray = snapshot.val().queue.split(",");
       }
 
       if (numPlayers == 2 && !gameStarted) {
@@ -82,7 +93,9 @@ $(window).on("load", function() {
 
 // Before the user leaves reduce the number of players connected in the database
 window.addEventListener("beforeunload", function(event) {
+  queueArray[queueNum] = "empty";
   database.ref().update({
-    numPlayers: numPlayers - 1
+    numPlayers: numPlayers - 1,
+    queue: queueArray.join()
   });
 });
