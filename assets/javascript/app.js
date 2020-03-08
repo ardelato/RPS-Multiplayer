@@ -52,17 +52,22 @@ $(window).on("load", function() {
         queueArray = snapshot.val().queue.split(",");
       }
 
-      if (numPlayers == 2 && !gameStarted) {
-        $("#lobby-status").text("Other player has connected!!!");
-        gameStarted = true;
-      } else if (numPlayers < 2 && !gameStarted) {
-        $("#lobby-status").text("Please wait for player 2");
-      }
       // Scenario when player 3 joins, gamestarted is first false
       // so player 3 would no be able to start the game and this
       // would not affect player 1 and 2
-      else if (numPlayers > 2 && !gameStarted) {
+      if (numPlayers > 2 && !gameStarted) {
         $("#lobby-status").text("Please wait, two players are already playing");
+      }
+      // Scenario when it's just two players connected
+      else if (queueArray.join() === "Connected,Connected" && !gameStarted) {
+        $("#lobby-status").text("Other player has connected!!!");
+        gameStarted = true;
+      }
+      // Scenario when one of the two players leaves a current game and now we need
+      // reset the current game status
+      else if (queueArray.join() !== "Connected,Connected") {
+        gameStarted = false;
+        $("#lobby-status").text("Please wait for player 2");
       }
     },
     function(errorObject) {
@@ -70,16 +75,18 @@ $(window).on("load", function() {
     }
   );
 
+  // Read opposing player's choice;
   database.ref(opposingPlayer).on(
     "value",
     function(snapshot) {
-      console.log(opposingPlayer);
+      console.log("Opponent: " + opposingPlayer);
       console.log(snapshot.child(opposingPlayer).val());
     },
     function(errorObject) {
       console.log("The read failed: " + errorObject.code);
     }
   );
+
   //RPS chosen
   $(".choice-image").on("click", function() {
     console.log("Choice: " + $(this).attr("id"));
@@ -93,6 +100,7 @@ $(window).on("load", function() {
 
 // Before the user leaves reduce the number of players connected in the database
 window.addEventListener("beforeunload", function(event) {
+  // Update Queue array
   queueArray[queueNum] = "empty";
   database.ref().update({
     numPlayers: numPlayers - 1,
