@@ -6,8 +6,30 @@ body {
   text-align: center;
 }
 
+h1 {
+  font-size: 150px;
+  margin: 0 auto;
+}
+
+h2 {
+  font-size: 100px;
+}
+
+.waiting-screen {
+  display: flex;
+}
+
+.choices {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .choice-container {
-  display: none;
+  margin: 60px;
+}
+.caption {
+  display: block;
 }
 
 .choice-image {

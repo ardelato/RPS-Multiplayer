@@ -35,27 +35,27 @@ var database = firebase.database();
 //Show the Outcome
 function outCome() {
   if (playersChoice === opponentsChoice) {
-    alert("Draw, no winner");
+    // alert("Draw, no winner");
     database.ref(currentPlayer).update({
       draws: ++draws
     });
   } else if (playersChoice === "rock" && opponentsChoice === "scissors") {
-    alert("You Win");
+    // alert("You Win");
     database.ref(currentPlayer).update({
       wins: ++wins
     });
   } else if (playersChoice === "scissors" && opponentsChoice === "paper") {
-    alert("You Win");
+    // alert("You Win");
     database.ref(currentPlayer).update({
       wins: ++wins
     });
   } else if (playersChoice === "paper" && opponentsChoice === "rock") {
-    alert("You Win");
+    // alert("You Win");
     database.ref(currentPlayer).update({
       wins: ++wins
     });
   } else {
-    alert("You lose");
+    // alert("You lose");
     database.ref(currentPlayer).update({
       losses: ++losses
     });
@@ -67,7 +67,7 @@ function decreaseTime() {
   roundTimer--;
   if (roundTimer === 0) {
     roundEnded = true;
-    alert("Time's Up");
+    // alert("Time's Up");
     outCome();
     roundTimer = 10;
     roundEnded = false;
@@ -76,7 +76,7 @@ function decreaseTime() {
     console.log(roundTimer);
   }
   $("#lobby-status").text("Get Ready");
-  $("#round-timer").text("Time Left: " + roundTimer);
+  $("#round-timer").text("Time Left: " + roundTimer + " seconds");
 }
 
 // Reset Game Variables
@@ -85,7 +85,7 @@ function resetGame() {
   gameStarted = false;
   clearInterval(timerID);
   roundTimer = 10;
-  $("#round-timer").text("");
+  $("#round-timer").text("Time Left: 10");
   $("#lobby-status").text("Please wait for player 2");
 }
 
@@ -102,6 +102,7 @@ function updateLobbyStatus() {
     $("#lobby-status").text("Other player has connected!!!");
     gameStarted = true;
     $(".choice-container").show();
+    $(".waiting-container").hide();
     console.log("Game Starting");
 
     timerID = setInterval(function() {
@@ -113,6 +114,7 @@ function updateLobbyStatus() {
   else if (queueArray.join() !== "Connected,Connected") {
     resetGame();
     $(".choice-container").hide();
+    $(".waiting-container").show();
   }
 }
 
