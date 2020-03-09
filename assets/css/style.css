@@ -9,6 +9,7 @@ body {
 .choice-image {
   width: 200px;
   height: 200px;
+  opacity: 0.5;
   cursor: pointer;
 }
 

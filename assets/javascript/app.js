@@ -1,5 +1,6 @@
 var currentPlayer;
 var playersChoice;
+var choiceSelected = false;
 var wins = 0;
 var losses = 0;
 var draws = 0;
@@ -70,6 +71,7 @@ function decreaseTime() {
     outCome();
     roundTimer = 10;
     roundEnded = false;
+    choiceSelected = false;
   } else {
     console.log(roundTimer);
   }
@@ -188,16 +190,21 @@ $(window).on("load", function() {
         //Update CSS to show current selection
         $(".choice-image").css("opacity", "0.5");
         $(this).css("opacity", 1);
+        choiceSelected = true;
       }
     },
     mouseenter: function() {
-      console.log("Entered mouse enter Event");
-      $(".choice-image").css("opacity", "0.5");
-      $(this).css("opacity", 1);
+      if (!choiceSelected) {
+        console.log("Entered mouse enter Event");
+        $(".choice-image").css("opacity", "0.5");
+        $(this).css("opacity", 1);
+      }
     },
     mouseleave: function() {
-      console.log("Entered Mouseleave event");
-      $(".choice-image").css("opacity", "1");
+      if (!choiceSelected) {
+        console.log("Entered Mouseleave event");
+        $(".choice-image").css("opacity", "0.5");
+      }
     }
   });
 });
