@@ -87,6 +87,7 @@ function resetGame() {
   $("#lobby-status").text("Please wait for player 2");
 }
 
+// Connection Status Update
 function updateLobbyStatus() {
   // Scenario when player 3 joins, gamestarted is first false
   // so player 3 would no be able to start the game and this
@@ -176,16 +177,29 @@ $(window).on("load", function() {
   );
 
   //RPS chosen
-  $(".choice-image").on("click", function() {
-    console.log("Choice: " + $(this).attr("id"));
-    if (!roundEnded) {
-      playersChoice = $(this).attr("id");
-      database.ref(currentPlayer).update({
-        playersChoice: $(this).attr("id")
-      });
+  $(".choice-image").on({
+    click: function() {
+      console.log("Choice: " + $(this).attr("id"));
+      if (!roundEnded) {
+        playersChoice = $(this).attr("id");
+        database.ref(currentPlayer).update({
+          playersChoice: $(this).attr("id")
+        });
+        //Update CSS to show current selection
+        $(".choice-image").css("opacity", "0.5");
+        $(this).css("opacity", 1);
+      }
+    },
+    mouseenter: function() {
+      console.log("Entered mouse enter Event");
+      $(".choice-image").css("opacity", "0.5");
+      $(this).css("opacity", 1);
+    },
+    mouseleave: function() {
+      console.log("Entered Mouseleave event");
+      $(".choice-image").css("opacity", "1");
     }
   });
-  //
 });
 
 // Before the user leaves reduce the number of players connected in the database
