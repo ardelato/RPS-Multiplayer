@@ -125,6 +125,7 @@ function resetGame() {
   roundTimer = 10;
   round = 1;
   $("#round-timer").text("");
+  $("#lobby-status").css("visibility", "visible");
   $("#lobby-status").text("Please wait for player 2");
 }
 
