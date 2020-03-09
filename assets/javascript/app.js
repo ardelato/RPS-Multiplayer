@@ -1,12 +1,22 @@
 var currentPlayer;
+var playersChoice;
+var wins = 0;
+var losses = 0;
+var draws = 0;
+
 var opposingPlayer;
+var opponentsChoice;
 
 var numPlayers;
 var queueArray;
 var queueNum;
 
 var gameStarted = false;
+
+var round = 1;
 var roundTimer = 10;
+var roundEnded = false;
+
 var timerID;
 
 var config = {
@@ -21,16 +31,60 @@ var config = {
 firebase.initializeApp(config);
 var database = firebase.database();
 
+//Show the Outcome
+function outCome() {
+  if (playersChoice === opponentsChoice) {
+    alert("Draw, no winner");
+    database.ref(currentPlayer).update({
+      draws: ++draws
+    });
+  } else if (playersChoice === "rock" && opponentsChoice === "scissors") {
+    alert("You Win");
+    database.ref(currentPlayer).update({
+      wins: ++wins
+    });
+  } else if (playersChoice === "scissors" && opponentsChoice === "paper") {
+    alert("You Win");
+    database.ref(currentPlayer).update({
+      wins: ++wins
+    });
+  } else if (playersChoice === "paper" && opponentsChoice === "rock") {
+    alert("You Win");
+    database.ref(currentPlayer).update({
+      wins: ++wins
+    });
+  } else {
+    alert("You lose");
+    database.ref(currentPlayer).update({
+      losses: ++losses
+    });
+  }
+}
+
+// Decrease Round Timer
 function decreaseTime() {
   roundTimer--;
   if (roundTimer === 0) {
+    roundEnded = true;
     alert("Time's Up");
+    outCome();
     roundTimer = 10;
+    roundEnded = false;
   } else {
     console.log(roundTimer);
   }
   $("#lobby-status").text("Get Ready");
   $("#round-timer").text("Time Left: " + roundTimer);
+}
+
+// Reset Game Variables
+function resetGame() {
+  console.log("Game Restarting");
+  gameStarted = false;
+  clearInterval(timerID);
+  roundTimer = 10;
+  $("#round-timer").text("");
+  $("#lobby-status").text("Please wait for player 2");
 }
 
 function updateLobbyStatus() {
@@ -53,12 +107,7 @@ function updateLobbyStatus() {
   // Scenario when one of the two players leaves a current game and now we need
   // reset the current game status
   else if (queueArray.join() !== "Connected,Connected") {
-    console.log("Game Restarting");
-    gameStarted = false;
-    clearInterval(timerID);
-    roundTimer = 10;
-    $("#round-timer").text("");
-    $("#lobby-status").text("Please wait for player 2");
+    resetGame();
   }
 }
 
@@ -88,7 +137,16 @@ $(window).on("load", function() {
           queue: queueArray.join(),
           numPlayers: numPlayers
         });
-      } else {
+
+        //Reset Player Stats
+        database.ref(currentPlayer).update({
+          draws: draws,
+          losses: losses,
+          wins: wins
+        });
+      }
+      // Otherwise player has already established a connection
+      else {
         numPlayers = snapshot.val().numPlayers;
         queueArray = snapshot.val().queue.split(",");
       }
@@ -103,12 +161,14 @@ $(window).on("load", function() {
   database.ref(opposingPlayer).on(
     "value",
     function(snapshot) {
-      console.log(
-        "Opponent: " +
-          opposingPlayer +
-          " choose " +
-          snapshot.child(opposingPlayer).val().playersChoice
-      );
+      if (roundEnded) {
+        console.log("Answer is Locked in");
+      } else {
+        opponentsChoice = snapshot.child(opposingPlayer).val().playersChoice;
+        console.log(
+          "Opponent: " + opposingPlayer + " choose " + opponentsChoice
+        );
+      }
     },
     function(errorObject) {
       console.log("The read failed: " + errorObject.code);
@@ -118,11 +178,13 @@ $(window).on("load", function() {
   //RPS chosen
   $(".choice-image").on("click", function() {
     console.log("Choice: " + $(this).attr("id"));
-    database.ref(currentPlayer).update({
-      playersChoice: $(this).attr("id")
-    });
+    if (!roundEnded) {
+      playersChoice = $(this).attr("id");
+      database.ref(currentPlayer).update({
+        playersChoice: $(this).attr("id")
+      });
+    }
   });
-
   //
 });
 
