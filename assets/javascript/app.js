@@ -68,33 +68,62 @@ function gameStartTime() {
     roundTimer = 10;
     clearInterval(timerID);
     timerID = setInterval(function() {
-      decreaseTime();
+      decreaseRoundTime();
     }, 1000);
+  } else {
+    $("#round-timer").text("Game starting in: " + roundTimer + " seconds");
   }
-  $("#round-timer").text("Game starting in: " + roundTimer + " seconds");
 }
 // Decrease Round Timer
-function decreaseTime() {
+function decreaseRoundTime() {
   roundTimer--;
+  $("#round-timer").css("visibility", "visible");
   if (roundTimer === 0) {
+    $("#round-timer").css("visibility", "hidden");
     roundEnded = true;
     // alert("Time's Up");
     outCome();
     roundTimer = 10;
-    roundEnded = false;
     choiceSelected = false;
     round++;
+    clearInterval(timerID);
+    timerID = setInterval(function() {
+      decreaseBetweenTime();
+    }, 1000);
+    $("#lobby-status").css("visibility", "hidden");
+    $("#lobby-status").text("Round " + round);
+  } else {
+    $("#lobby-status").text("Round " + round);
+    $("#round-timer").text("Time Left: " + roundTimer + " seconds");
   }
-  $("#lobby-status").text("Round " + round);
-  $("#round-timer").text("Time Left: " + roundTimer + " seconds");
 }
 
+function decreaseBetweenTime() {
+  roundTimer--;
+  $("#round-timer").css("visibility", "visible");
+  if (roundTimer === 0) {
+    $("#round-timer").css("visibility", "hidden");
+    roundEnded = false;
+    // alert("Time's Up");
+    roundTimer = 10;
+    clearInterval(timerID);
+    timerID = setInterval(function() {
+      decreaseRoundTime();
+    }, 1000);
+    $("#lobby-status").css("visibility", "visible");
+  } else {
+    $("#round-timer").text(
+      "Next round will start in: " + roundTimer + " seconds"
+    );
+  }
+}
 // Reset Game Variables
 function resetGame() {
   console.log("Game Restarting");
   gameStarted = false;
   clearInterval(timerID);
   roundTimer = 10;
+  round = 1;
   $("#round-timer").text("");
   $("#lobby-status").text("Please wait for player 2");
 }
