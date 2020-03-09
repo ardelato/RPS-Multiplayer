@@ -101,6 +101,7 @@ function updateLobbyStatus() {
   else if (queueArray.join() === "Connected,Connected" && !gameStarted) {
     $("#lobby-status").text("Other player has connected!!!");
     gameStarted = true;
+    $(".choice-container").show();
     console.log("Game Starting");
 
     timerID = setInterval(function() {
@@ -111,6 +112,7 @@ function updateLobbyStatus() {
   // reset the current game status
   else if (queueArray.join() !== "Connected,Connected") {
     resetGame();
+    $(".choice-container").hide();
   }
 }
 
