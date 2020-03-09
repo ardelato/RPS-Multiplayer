@@ -61,7 +61,18 @@ function outCome() {
     });
   }
 }
-
+//Decrease Timer for when the game will start
+function gameStartTime() {
+  roundTimer--;
+  if (roundTimer === 0) {
+    roundTimer = 10;
+    clearInterval(timerID);
+    timerID = setInterval(function() {
+      decreaseTime();
+    }, 1000);
+  }
+  $("#round-timer").text("Game starting in: " + roundTimer + " seconds");
+}
 // Decrease Round Timer
 function decreaseTime() {
   roundTimer--;
@@ -72,10 +83,9 @@ function decreaseTime() {
     roundTimer = 10;
     roundEnded = false;
     choiceSelected = false;
-  } else {
-    console.log(roundTimer);
+    round++;
   }
-  $("#lobby-status").text("Get Ready");
+  $("#lobby-status").text("Round " + round);
   $("#round-timer").text("Time Left: " + roundTimer + " seconds");
 }
 
@@ -85,7 +95,7 @@ function resetGame() {
   gameStarted = false;
   clearInterval(timerID);
   roundTimer = 10;
-  $("#round-timer").text("Time Left: 10");
+  $("#round-timer").text("");
   $("#lobby-status").text("Please wait for player 2");
 }
 
@@ -99,14 +109,13 @@ function updateLobbyStatus() {
   }
   // Scenario when it's just two players connected
   else if (queueArray.join() === "Connected,Connected" && !gameStarted) {
-    $("#lobby-status").text("Other player has connected!!!");
+    $("#lobby-status").text("Other player has connected!");
     gameStarted = true;
     $(".choice-container").show();
     $(".waiting-container").hide();
-    console.log("Game Starting");
-
+    $("#round-timer").text("Game will start in: " + roundTimer);
     timerID = setInterval(function() {
-      decreaseTime();
+      gameStartTime();
     }, 1000);
   }
   // Scenario when one of the two players leaves a current game and now we need
