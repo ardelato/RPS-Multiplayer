@@ -132,6 +132,7 @@ function resetGame() {
   clearInterval(timerID);
   roundTimer = 10;
   round = 1;
+  wins = losses = draws = 0;
   $("#round-timer").text("");
   $("#lobby-status").css("visibility", "visible");
   $("#lobby-status").text("Please wait for player 2");

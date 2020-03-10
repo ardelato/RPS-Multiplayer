@@ -39,6 +39,15 @@ h2 {
   cursor: pointer;
 }
 
+.stats {
+  /* visibility: hidden; */
+  margin: 0 auto;
+}
+
+.stats h3 {
+  font-size: 60px;
+}
+
 #scissors {
   transform: rotate(-90deg);
 }
