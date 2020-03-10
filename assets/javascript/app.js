@@ -34,30 +34,41 @@ var database = firebase.database();
 
 //Show the Outcome
 function outCome() {
+  console.log(
+    "Players Choice: " +
+      playersChoice +
+      " & Opponents Choice: " +
+      opponentsChoice
+  );
   if (playersChoice === opponentsChoice) {
-    // alert("Draw, no winner");
+    $("#draws").text("Draws: " + ++draws);
+    $("#lobby-status").text("DRAW!!!");
     database.ref(currentPlayer).update({
-      draws: ++draws
+      draws: draws
     });
   } else if (playersChoice === "rock" && opponentsChoice === "scissors") {
-    // alert("You Win");
+    $("#wins").text("Wins: " + ++wins);
+    $("#lobby-status").text("You Won!");
     database.ref(currentPlayer).update({
-      wins: ++wins
+      wins: wins
     });
   } else if (playersChoice === "scissors" && opponentsChoice === "paper") {
-    // alert("You Win");
+    $("#wins").text("Wins: " + ++wins);
+    $("#lobby-status").text("You Won!");
     database.ref(currentPlayer).update({
-      wins: ++wins
+      wins: wins
     });
   } else if (playersChoice === "paper" && opponentsChoice === "rock") {
-    // alert("You Win");
+    $("#wins").text("Wins: " + ++wins);
+    $("#lobby-status").text("You Won!");
     database.ref(currentPlayer).update({
-      wins: ++wins
+      wins: wins
     });
   } else {
-    // alert("You lose");
+    $("#losses").text("Losses: " + ++losses);
+    $("#lobby-status").text("You lose!");
     database.ref(currentPlayer).update({
-      losses: ++losses
+      losses: losses
     });
   }
 }
@@ -90,8 +101,6 @@ function decreaseRoundTime() {
     timerID = setInterval(function() {
       decreaseBetweenTime();
     }, 1000);
-    $("#lobby-status").css("visibility", "hidden");
-    $("#lobby-status").text("Round " + round);
   } else {
     $("#lobby-status").text("Round " + round);
     $("#round-timer").text("Time Left: " + roundTimer + " seconds");
@@ -110,7 +119,6 @@ function decreaseBetweenTime() {
     timerID = setInterval(function() {
       decreaseRoundTime();
     }, 1000);
-    $("#lobby-status").css("visibility", "visible");
   } else {
     $("#round-timer").text(
       "Next round will start in: " + roundTimer + " seconds"
